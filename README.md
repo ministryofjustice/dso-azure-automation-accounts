@@ -1,0 +1,1 @@
+# dso-azure-automation-accounts

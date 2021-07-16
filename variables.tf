@@ -1,1 +1,1 @@
-variable "automation_accounts" { type = map }
+variable "automation_accounts" {}

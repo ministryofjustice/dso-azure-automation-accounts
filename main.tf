@@ -6,7 +6,7 @@ provider "azurerm" {
 # automation
 
 module "automation_account" {
-  source            = "../modules/automation_account"
+  source            = "./modules/automation_account"
   for_each          = var.automation_accounts
   resource_group    = each.key
   script_templates  = lookup(each, "script_templates", [

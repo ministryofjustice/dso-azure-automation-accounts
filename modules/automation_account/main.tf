@@ -22,6 +22,7 @@ resource "azurerm_automation_schedule" "schedules" {
   frequency               = "Week"
   week_days               = each.value.week_days
   start_time              = each.value.start_time
+  timezone                = "Europe/London"
 }
 
 resource "azurerm_automation_runbook" "runbooks" {

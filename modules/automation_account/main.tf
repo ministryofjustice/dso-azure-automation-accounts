@@ -1,7 +1,6 @@
 locals {  # currently working on
   current_time = timestamp()
-  tomorrow     = formatdate("YYYY-MM-DD", timeadd(local.current_time, "24h")) # when to know when have +1
-                                                                              # on friday push it back 3 days
+  tomorrow     = formatdate("YYYY-MM-DD", timeadd(local.current_time, "24h"))
 }
 
 resource "azurerm_automation_account" "automation_account" {

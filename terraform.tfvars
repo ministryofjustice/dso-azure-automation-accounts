@@ -6,7 +6,12 @@
 # will set up shutdown/startup automation at 7pm, 6am UTC respectively
 
 automation_accounts = { # each named after resource group
-  t2-oasys = {}
+  t2-oasys = {
+    exceptions = [
+      "T2ODL0009", # DB server, problem with disk unique id changing after shutdown https://dsdmoj.atlassian.net/browse/DSO-1095
+      "T2OML0007" # currently services aren't started at boot https://dsdmoj.atlassian.net/browse/DSO-1097
+    ]
+  }
 }
 
 schedules = {

@@ -1,35 +1,49 @@
 workflow stop-vms
 {
+    Param 
+    (    
+        [String] 
+        $exceptions_string = ''
+    ) 
+    
     # vars
-    $resourceGroup = "${resource_group}"
+    $resourceGroup   = "${resource_group}"
+    $exceptions_list = ($exceptions_string).split(" ")
     
     # login - need to have managed identity for this to work https://docs.microsoft.com/en-us/azure/automation/enable-managed-identity-for-automation
     Connect-AzureRMAccount -Identity
 
     # get vm list
-    $azureVMs = (Get-AzureRmVM -ResourceGroupName $resourceGroup).Name 
-    [System.Collections.ArrayList]$azureVMsToHandle = $azureVMs 
+    $vms_in_rg = (Get-AzureRmVM -ResourceGroupName $resourceGroup).Name 
+    
+    # remove exceptions from vm list
+    $vms_to_handle = InlineScript {
+        $vms_in_rg = $using:vms_in_rg
+        $exceptions_list = $using:exceptions_list
+        $vms_to_handle = [System.Collections.ArrayList]@()
+        foreach ($vm in $vms_in_rg) {
+            if ($exceptions_list -notcontains $vm) {
+                $vms_to_handle += $vm
+            }
+        }
+        return $vms_to_handle
+    }
+    Write-Output 'VM list:'
+    Write-Output $vms_to_handle
 
     # iterate over vms
-    foreach -parallel ($azureVM in $azureVMsToHandle) 
+    foreach -parallel ($vm in $vms_to_handle) 
     {
         # update monitoring tag if it exists
-        $tags  = (Get-AzureRmResource -ResourceGroupName $resourceGroup -Name $azureVM).Tags
+        $tags  = (Get-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm).Tags
         $new_tags = InlineScript {
-            $new_tags = @()
-            $tags = $Using:tags
-            foreach($item in $tags) {
-                if ($item.Name -eq "not_monitored") {
-                    $new_tags += @{"Name"="not_monitored";"Value"="true"}
-                } else {
-                    $new_tags += @{"Name"=$item.Name;"Value"=$item.Value}
-                }
-            }
+            $new_tags = $Using:tags
+            $new_tags.not_monitored = "true"
             return $new_tags
         }
-        Set-AzureRmResource -ResourceGroupName $resourceGroup -Name $azureVM -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $new_tags -Force 
+        Set-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $new_tags -Force 
 
         # stop vm
-        Stop-AzureRmVM -ResourceGroupName $ResourceGroup -Name $azureVM -Force
+        Stop-AzureRmVM -ResourceGroupName $ResourceGroup -Name $vm -Force
     }
 }

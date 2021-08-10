@@ -5,11 +5,36 @@ discussion on making shutdown automation this way https://github.com/ministryofj
 # How to use repo
 - add to terraform.tfvars
 - MANGED IDENTITY NEEDS TO BE DONE MANUALLY - TF isn't able to do this yet. Add the system managed identity through the UI and give relevant permissions.
+- ordering done by using vm tags (sequence_start, sequence_stop)
 
 
-## FUNCTIONALITY WE COULD ADD
+## ORDERING BY TAGS
 
-start stop in sequence: https://docs.microsoft.com/en-us/azure/automation/automation-solution-vm-management-config#tags
+sequence_start / sequence_stop can be some number, and optionally have _series if wanted to be done in series instead of in parallel
+e.g. 
+sequence_start = 3_series - will be in the 3rd batch to start, and will start each one-by-one 
+sequence_stop = 2 - will be in the 2ns batch to stop, and will stop the whole batch at the same time 
+
+script orders hosts by tags alphanumerically, if group has _series it will turn off parallel.
+If hosts in the same RG had inconsistent tagging, e.g. '3_series' and '3', then the 3 group would be run in parallel, then the 3_series group would be run.
+Not harmful behaviour, and it would be worse if the the process failed and stopped, so happy to live with this behaviour.
+
+Ordering by tagging was chosen instead of by vm list for better visibility in the portal, and it means we don't need keep changing things in code - the teams can change it as appropriate.
+
+## EXAMPLE TAG COMMANDS
+
+# replace all tags with new set
+az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name>	--operation Replace --tags key1=value1 ...
+
+# add/update tags
+az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags key1=value1 key3=value3
+
+# add exclude tag
+az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags shutdown_exclude=true
+
+# set shutdown order tag
+az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags sequence_start=1_series sequence_stop=2
+
 
 
 ## PROBLEMS
@@ -17,6 +42,7 @@ start stop in sequence: https://docs.microsoft.com/en-us/azure/automation/automa
 ### USING UTC AND NOT LOCAL TIME
 TL;DR
 horrible code to deal with timezones vs UTC that has 1 hour less shutdown time and 1/12 less savings
+Chose UTC
 
 If we were to use the local time, the problem is BST
 azure doesn't have a good way of dealing with this - you need to specify the start time in this format
@@ -48,5 +74,3 @@ Although:
  - the automation account having a managed identity would be better, less maintenance etc (unable to do through TF as of 14/7/21)
  - this would be a new thing the team would need to have understanding of
  Therefore, seems not worth going through all this hassle and instead for each automation account manually toggling managed_identity until TF gains this capability
-
-

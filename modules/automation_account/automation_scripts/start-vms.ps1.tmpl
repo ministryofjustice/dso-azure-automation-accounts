@@ -17,8 +17,6 @@ workflow start-vms
         foreach ($vm in $vms_in_rg) {
             if ($vm.Tags.shutdown_exclude -ne 'true') {
                 $vms_to_handle += $vm
-            } else {
-                #Write-Output "Excluding $($vm.Name)"
             }
         }
         return $vms_to_handle
@@ -67,33 +65,33 @@ workflow start-vms
         # 'Splatting is not permitted in workflow activities or in calls to workflows'
         if ($group.Key -match '_series$') {
             foreach ($vm in $group.Value) { 
-                
-                # start vm
-                Start-AzureRmVM -ResourceGroupName $resourceGroup -Name $vm
-                
-                # update monitoring tag
-                $tags  = (Get-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm).Tags
-                $new_tags = InlineScript {
-                    $new_tags = $Using:tags
-                    $new_tags.not_monitored = "false"
-                    return $new_tags
-                }
-                Set-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $new_tags -Force 
+                InlineScript {
+                    $vm            = $Using:vm
+                    $resourceGroup = $Using:resourceGroup
+
+                    # start vm
+                    Start-AzureRmVM -ResourceGroupName $resourceGroup -Name $vm
+
+                    # update monitoring tag
+                    $tags = (Get-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm).Tags
+                    $tags.not_monitored = "false"
+                    Set-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $tags -Force
+                } 
             }
         } else {
             foreach -parallel ($vm in $group.Value) {
-                
-                # start vm
-                Start-AzureRmVM -ResourceGroupName $resourceGroup -Name $vm
-                
-                # update monitoring tag
-                $tags  = (Get-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm).Tags
-                $new_tags = InlineScript {
-                    $new_tags = $Using:tags
-                    $new_tags.not_monitored = "false"
-                    return $new_tags
-                }
-                Set-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $new_tags -Force 
+                InlineScript {
+                    $vm            = $Using:vm
+                    $resourceGroup = $Using:resourceGroup
+
+                    # start vm
+                    Start-AzureRmVM -ResourceGroupName $resourceGroup -Name $vm
+
+                    # update monitoring tag
+                    $tags = (Get-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm).Tags
+                    $tags.not_monitored = "false"
+                    Set-AzureRmResource -ResourceGroupName $resourceGroup -Name $vm -ResourceType "Microsoft.Compute/VirtualMachines" -Tag $tags -Force 
+                }              
             }
         }
     }

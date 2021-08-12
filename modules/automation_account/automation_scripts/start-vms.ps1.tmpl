@@ -30,6 +30,7 @@ workflow start-vms
     # create ordering groups
     $ordered_vms = InlineScript {
         $vms_to_handle = $using:vms_to_handle
+        $sequence_tag  = $using:sequence_tag
         # add groups
         $ordered_vms = [ordered]@{}
         $ordered_vms['0'] = [System.Collections.ArrayList]@()

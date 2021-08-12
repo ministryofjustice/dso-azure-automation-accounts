@@ -7,8 +7,8 @@
 
 automation_accounts = { # each named after resource group
   t2-oasys          = {},
-  nomis-bip-lsast   = {},
-  nomis-bip-preprod = {},
+  #nomis-bip-lsast   = {}, # need to run in separate folder for different subscription
+  #nomis-bip-preprod = {},
   nomis-bip-t1      = {}
 }
 

@@ -23,18 +23,25 @@ Ordering by tagging was chosen instead of by vm list for better visibility in th
 
 ## EXAMPLE TAG COMMANDS
 
-# replace all tags with new set
+### replace all tags with new set
+```
 az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name>	--operation Replace --tags key1=value1 ...
+```
 
-# add/update tags
+### add/update tags
+```
 az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags key1=value1 key3=value3
+```
 
-# add exclude tag
+### add exclude tag
+```
 az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags shutdown_exclude=true
+```
 
-# set shutdown order tag
+### set shutdown order tag
+```
 az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags sequence_start=1_series sequence_stop=2
-
+```
 
 
 ## PROBLEMS

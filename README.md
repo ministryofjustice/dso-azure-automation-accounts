@@ -5,6 +5,7 @@ discussion on making shutdown automation this way https://github.com/ministryofj
 # How to use repo
 - add to terraform.tfvars
 - MANGED IDENTITY NEEDS TO BE DONE MANUALLY - TF isn't able to do this yet. Add the system managed identity through the UI and give relevant permissions.
+- UPDATING AZURERM NEEDS TO BE DONE MANUALLY
 - ordering done by using vm tags (sequence_start, sequence_stop)
 
 

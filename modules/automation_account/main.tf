@@ -10,14 +10,15 @@ resource "azurerm_automation_account" "automation_account" {
   sku_name            = "Basic"
 }
 
-resource "azurerm_automation_module" "azurerm" {
-  name                    = "AzureRM"
-  resource_group_name     = azurerm_automation_account.automation_account.resource_group_name
-  automation_account_name = azurerm_automation_account.automation_account.name
-  module_link {
-    uri = "https://www.powershellgallery.com/api/v2/package/AzureRM/6.13.2"
-  }
-}
+# sadly doesn't work
+#resource "azurerm_automation_module" "azurerm" {
+#  name                    = "AzureRM"
+#  resource_group_name     = azurerm_automation_account.automation_account.resource_group_name
+#  automation_account_name = azurerm_automation_account.automation_account.name
+#  module_link {
+#    uri = "https://www.powershellgallery.com/api/v2/package/AzureRM/6.13.2"
+#  }
+#}
 
 resource "azurerm_automation_schedule" "schedules" {
   for_each                = var.schedules

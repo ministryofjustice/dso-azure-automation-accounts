@@ -40,7 +40,7 @@ workflow stop-vms
         # add vms into groups
         foreach ($vm in $vms_to_handle) {
             if ($vm.Tags[$sequence_tag] -match '^\d+') {
-                $ordered_vms[$vm.Tags[$sequence_tag] += $vm.Name
+                $ordered_vms[$vm.Tags[$sequence_tag]] += $vm.Name
             } else {
                 $ordered_vms['0'] += $vm.Name
             }

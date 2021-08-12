@@ -6,7 +6,10 @@
 # will set up shutdown/startup automation at 7pm, 6am UTC respectively
 
 automation_accounts = { # each named after resource group
-  t2-oasys = {}
+  t2-oasys          = {},
+  nomis-bip-lsast   = {},
+  nomis-bip-preprod = {},
+  nomis-bip-t1      = {}
 }
 
 schedules = {

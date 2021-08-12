@@ -38,7 +38,7 @@ az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource gro
 az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags shutdown_exclude=true
 ```
 
-### set shutdown order tag
+### set shutdown order tags
 ```
 az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource group name>/providers/Microsoft.Compute/virtualMachines/<vm name> --operation merge --tags sequence_start=1_series sequence_stop=2
 ```

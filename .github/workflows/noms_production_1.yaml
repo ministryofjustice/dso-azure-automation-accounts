@@ -1,9 +1,16 @@
-name: automation_accounts
+name: noms_production_1
 
 on:
   push:
     branches:
         - main
+    paths:
+      - noms_production_1/**
+      - main.tf
+      - variables.tf
+      - version.tf
+      - .github/workflows/noms_production_1.yml
+      - modules/**
   
   pull_request:
     types: 
@@ -13,16 +20,23 @@ on:
       - reopened
     branches:
       - main
+    paths:
+      - noms_production_1/**
+      - main.tf
+      - variables.tf
+      - version.tf
+      - .github/workflows/noms_production_1.yml
+      - modules/**
 
 env:
   ARM_CLIENT_ID: bf20317f-324c-4d13-be85-f11d29ea401e # dso-azure-automation-accounts
   ARM_CLIENT_SECRET: ${{ secrets.DSO_AZURE_AUTOMATION_ACCOUNTS_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: b1f3cebb-4988-4ff9-9259-f02ad7744fcb # NOMS Dev & Test Environments
+  ARM_SUBSCRIPTION_ID: 1d95dcda-65b2-4273-81df-eb979c6b547b # NOMS Production 1
   ARM_TENANT_ID: 747381f4-e81f-4a43-bf68-ced6a1e14edf
   GITHUB_ORGANIZATION: ministryofjustice
   GITHUB_USERNAME: hmpps-dso-automation
   GITHUB_TOKEN: ${{ secrets.DSO_GITHUB_AUTOMATION_PAT }}
-  WORKING_DIRECTORY: .
+  WORKING_DIRECTORY: noms_production_1
 
 jobs:
   terraform:

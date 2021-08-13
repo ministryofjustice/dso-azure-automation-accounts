@@ -4,7 +4,7 @@ terraform {
     tenant_id            = "747381f4-e81f-4a43-bf68-ced6a1e14edf"
     resource_group_name  = "dso-terraform-state"
     storage_account_name = "dsoautomationaccounts"
-    container_name       = "automation-accounts-tfstate"
+    container_name       = "automation-accounts-noms-production-1-tfstate"
     key                  = "terraform.tfstate"
   }
 }

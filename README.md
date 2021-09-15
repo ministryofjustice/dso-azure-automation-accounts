@@ -3,18 +3,27 @@
 discussion on making shutdown automation this way https://github.com/ministryofjustice/dso-infra-azure-fixngo/pull/48
 
 # How to use repo
-- add to terraform.tfvars
-- MANGED IDENTITY NEEDS TO BE DONE MANUALLY - TF isn't able to do this yet. Add the system managed identity through the UI and give relevant permissions.
-- UPDATING AZURERM NEEDS TO BE DONE MANUALLY
-- ordering done by using vm tags (sequence_start, sequence_stop)
+For a resource group you want to apply shutdown automation to :
+- Add ordering/disabling tags to vms - sequence_start, sequence_stop, shutdown_exclude (tag info in section below)
+- under the relevant subscription folder in this repo add resource group to terraform.tfvars
+- when tf looks good, apply. This will create everything except sorting out modules (couldn't get to work in tf) and identity (can't do in tf at the moment)
+- UPDATING AZURERM - https://www.powershellgallery.com/packages/AzureRM -> azure automation -> deploy to azure automation -> select new automation account
+- MANGED IDENTITY - TF isn't able to do this yet. Add the system managed identity through the UI (go to the automation account -> identity -> status on -> add contrib role to resource group)
 
+## Tags
 
-## ORDERING BY TAGS
+### disable shutdown automation by tag
+add the tag 
+```
+shutdown_exclude : true
+```
+
+### shutdown automation ordering by tags
 
 sequence_start / sequence_stop can be some number, and optionally have _series if wanted to be done in series instead of in parallel
 e.g. 
 sequence_start = 3_series - will be in the 3rd batch to start, and will start each one-by-one 
-sequence_stop = 2 - will be in the 2ns batch to stop, and will stop the whole batch at the same time 
+sequence_stop = 2 - will be in the 2nd batch to stop, and will stop the whole batch at the same time 
 
 script orders hosts by tags alphanumerically, if group has _series it will turn off parallel.
 If hosts in the same RG had inconsistent tagging, e.g. '3_series' and '3', then the 3 group would be run in parallel, then the 3_series group would be run.
@@ -45,11 +54,11 @@ az tag update --resource-id /subscriptions/<sub id>/resourcegroups/<resource gro
 ```
 
 
-## PROBLEMS
+## DECISIONS & PROBLEMS
 
 ### USING UTC AND NOT LOCAL TIME
 TL;DR
-horrible code to deal with timezones vs UTC that has 1 hour less shutdown time and 1/12 less savings
+horrible code to deal with timezones vs UTC that has 1 hour less shutdown time and 103/108 of the savings
 Chose UTC
 
 If we were to use the local time, the problem is BST
@@ -58,7 +67,7 @@ azure doesn't have a good way of dealing with this - you need to specify the sta
 terraform isn't aware of different timezones. timestamp() returns UTC only, and formatdate() can only change the form, it doesn't know when it's BST and when it's not
 SO! if we were to go down this path there are a few solutions
 1.
-use terraform to run a bash script locally, save it too a file locally (because you can't get outputs with local-exec), then read the local file in terraform to then use as a var
+use terraform to run a bash script locally, save it to a file locally (because you can't get outputs with local-exec), then read the local file in terraform to then use as a var
 resource "null_resource" "thing" {
   provisioner "local-exec" {
       command = "TZ=Europe/London date --iso-8601=seconds >> thing.txt"

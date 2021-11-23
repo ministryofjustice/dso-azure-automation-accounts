@@ -2,7 +2,7 @@
 
 discussion on making shutdown automation this way https://github.com/ministryofjustice/dso-infra-azure-fixngo/pull/48
 
-# How to use repo
+# How to use this repo
 For a resource group you want to apply shutdown automation to :
 - Add ordering/disabling tags to vms - sequence_start, sequence_stop, shutdown_exclude (tag info in section below)
 - under the relevant subscription folder in this repo add resource group to terraform.tfvars
@@ -10,26 +10,34 @@ For a resource group you want to apply shutdown automation to :
 - UPDATING AZURERM - https://www.powershellgallery.com/packages/AzureRM -> azure automation -> deploy to azure automation -> select new automation account
 - MANGED IDENTITY - TF isn't able to do this yet. Add the system managed identity through the UI (go to the automation account -> identity -> status on -> add contrib role to resource group)
 
+# Configuration
 ## Tags
 
-### disable shutdown automation by tag
-add the tag 
+### Disable
+To disable the shutdown automation add the tag `shutdown_exclude` to the VM you want to exclude.
+
+E.g.
 ```
 shutdown_exclude : true
 ```
 
-### shutdown automation ordering by tags
+### Ordering
 
-sequence_start / sequence_stop can be some number, and optionally have _series if wanted to be done in series instead of in parallel
-e.g. 
-sequence_start = 3_series - will be in the 3rd batch to start, and will start each one-by-one 
-sequence_stop = 2 - will be in the 2nd batch to stop, and will stop the whole batch at the same time 
+There are a number of tags that exist to control the ordering of the shutdown process, they are `sequence_start` and `sequence_stop`.
 
-script orders hosts by tags alphanumerically, if group has _series it will turn off parallel.
-If hosts in the same RG had inconsistent tagging, e.g. '3_series' and '3', then the 3 group would be run in parallel, then the 3_series group would be run.
-Not harmful behaviour, and it would be worse if the the process failed and stopped, so happy to live with this behaviour.
+The values of the tags `sequence_start` and `sequence_stop` can be some number, and can optionally have a `_series` suffix if the shutdown operation is required to be carried out in series instead of in parallel.
 
-Ordering by tagging was chosen instead of by vm list for better visibility in the portal, and it means we don't need keep changing things in code - the teams can change it as appropriate.
+E.g.
+
+`sequence_start = 3_series` 
+  - Will be in the 3rd batch to start
+  - Will start all of the batch `3` VMs one-by-one
+
+`sequence_stop = 2` 
+  - will be in the 2nd batch to stop
+  - will stop the whole batch at the same time 
+
+If hosts in the same RG had inconsistent tagging, e.g. a mix of '3_series' and '3'; the `3` group would be run in parallel, then the `3_series` group would be run.
 
 ## EXAMPLE TAG COMMANDS
 
@@ -65,20 +73,18 @@ If we were to use the local time, the problem is BST
 azure doesn't have a good way of dealing with this - you need to specify the start time in this format
 2014-04-15T18:00:15+02:00
 terraform isn't aware of different timezones. timestamp() returns UTC only, and formatdate() can only change the form, it doesn't know when it's BST and when it's not
-SO! if we were to go down this path there are a few solutions
-1.
-use terraform to run a bash script locally, save it to a file locally (because you can't get outputs with local-exec), then read the local file in terraform to then use as a var
+SO! if we were to go down this path there are a few solutions:
+
+1. use terraform to run a bash script locally, save it to a file locally (because you can't get outputs with local-exec), then read the local file in terraform to then use as a var
 resource "null_resource" "thing" {
   provisioner "local-exec" {
       command = "TZ=Europe/London date --iso-8601=seconds >> thing.txt"
   }
 }
 
-2.
-use external data source - terraform advises against https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/data_source
+2. use external data source - terraform advises against https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/data_source
 
-3.
-just use UTC. pulling it back an hour and for half of the year shutting down servers an hour later, and the other half of the year starting up servers an hour earlier
+3. just use UTC. pulling it back an hour and for half of the year shutting down servers an hour later, and the other half of the year starting up servers an hour earlier
 resulting in less savings but simpler code
 
 

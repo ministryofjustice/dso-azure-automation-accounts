@@ -65,20 +65,18 @@ If we were to use the local time, the problem is BST
 azure doesn't have a good way of dealing with this - you need to specify the start time in this format
 2014-04-15T18:00:15+02:00
 terraform isn't aware of different timezones. timestamp() returns UTC only, and formatdate() can only change the form, it doesn't know when it's BST and when it's not
-SO! if we were to go down this path there are a few solutions
-1.
-use terraform to run a bash script locally, save it to a file locally (because you can't get outputs with local-exec), then read the local file in terraform to then use as a var
+SO! if we were to go down this path there are a few solutions:
+
+1. use terraform to run a bash script locally, save it to a file locally (because you can't get outputs with local-exec), then read the local file in terraform to then use as a var
 resource "null_resource" "thing" {
   provisioner "local-exec" {
       command = "TZ=Europe/London date --iso-8601=seconds >> thing.txt"
   }
 }
 
-2.
-use external data source - terraform advises against https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/data_source
+2. use external data source - terraform advises against https://registry.terraform.io/providers/hashicorp/external/latest/docs/data-sources/data_source
 
-3.
-just use UTC. pulling it back an hour and for half of the year shutting down servers an hour later, and the other half of the year starting up servers an hour earlier
+3. just use UTC. pulling it back an hour and for half of the year shutting down servers an hour later, and the other half of the year starting up servers an hour earlier
 resulting in less savings but simpler code
 
 

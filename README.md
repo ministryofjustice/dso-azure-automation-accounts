@@ -2,7 +2,7 @@
 
 discussion on making shutdown automation this way https://github.com/ministryofjustice/dso-infra-azure-fixngo/pull/48
 
-# How to use repo
+# How to use this repo
 For a resource group you want to apply shutdown automation to :
 - Add ordering/disabling tags to vms - sequence_start, sequence_stop, shutdown_exclude (tag info in section below)
 - under the relevant subscription folder in this repo add resource group to terraform.tfvars

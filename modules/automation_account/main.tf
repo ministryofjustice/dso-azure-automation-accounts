@@ -50,7 +50,6 @@ resource "azurerm_automation_runbook" "runbooks" {
   content = templatefile("${path.module}/automation_scripts/${each.key}.ps1.tmpl", {
     resource_group       = azurerm_automation_account.automation_account.resource_group_name
     delay_between_groups = var.delay_between_groups
-
   })
 }
 

@@ -24,4 +24,5 @@ module "automation_account" {
       script   = "start-vms"
     }
   ])
+  delay_between_groups = lookup(each.value, "delay_between_groups", 180)
 }

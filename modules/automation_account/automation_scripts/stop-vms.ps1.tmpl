@@ -3,7 +3,7 @@ workflow stop-vms
     # vars
     $resourceGroup = "${resource_group}"
     $sequence_tag  = 'sequence_stop'
-    $delay_between_groups = 180
+    $delay_between_groups = ${delay_between_groups}
     
     # login - need to have managed identity for this to work https://docs.microsoft.com/en-us/azure/automation/enable-managed-identity-for-automation
     Connect-AzureRMAccount -Identity

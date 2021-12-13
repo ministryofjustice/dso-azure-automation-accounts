@@ -1,4 +1,4 @@
-locals {  # currently working on
+locals { # currently working on
   current_time = timestamp()
   tomorrow     = formatdate("YYYY-MM-DD", timeadd(local.current_time, "24h"))
 }
@@ -47,13 +47,15 @@ resource "azurerm_automation_runbook" "runbooks" {
   log_verbose             = "true"
   log_progress            = "true"
   runbook_type            = "PowerShellWorkflow"
-  content                 = templatefile("${path.module}/automation_scripts/${each.key}.ps1.tmpl", { 
-    resource_group = azurerm_automation_account.automation_account.resource_group_name
+  content = templatefile("${path.module}/automation_scripts/${each.key}.ps1.tmpl", {
+    resource_group       = azurerm_automation_account.automation_account.resource_group_name
+    delay_between_groups = var.delay_between_groups
+
   })
 }
 
 resource "azurerm_automation_job_schedule" "job_schedules" {
-  for_each                = { for index, js in var.job_schedules: index => js }
+  for_each                = { for index, js in var.job_schedules : index => js }
   resource_group_name     = azurerm_automation_account.automation_account.resource_group_name
   automation_account_name = azurerm_automation_account.automation_account.name
   schedule_name           = each.value.schedule

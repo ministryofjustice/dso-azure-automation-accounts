@@ -1,4 +1,4 @@
-variable "resource_group"   { type = string }
-variable "script_templates" { type = list }
-variable "schedules"        { type = map }
-variable "job_schedules"    { type = list }
+variable "resource_group" { type = string }
+variable "script_templates" { type = list(any) }
+variable "schedules" { type = map(any) }
+variable "job_schedules" { type = list(any) }

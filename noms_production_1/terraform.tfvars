@@ -6,19 +6,21 @@
 # will set up shutdown/startup automation at 7pm, 6am UTC respectively
 
 automation_accounts = { # each named after resource group
-  nomis-bip-lsast   = {},
-  nomis-bip-preprod = {}
+  nomis-bip-lsast = {},
+  nomis-bip-preprod = {
+    "delay_between_groups" = 600
+  }
 }
 
 schedules = {
   "weekdays 6am" = {
-    week_days     = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    time          = "06:00:00",
-    frequency     = "week"
+    week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    time      = "06:00:00",
+    frequency = "week"
   },
   "weekdays 7pm" = {
-    week_days     = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    time          = "19:00:00",
-    frequency     = "week"
+    week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    time      = "19:00:00",
+    frequency = "week"
   }
 }

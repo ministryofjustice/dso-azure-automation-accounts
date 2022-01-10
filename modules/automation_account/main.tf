@@ -33,7 +33,8 @@ resource "azurerm_automation_schedule" "schedules" {
     ignore_changes = [
       # Ignore changes to start_time, because if new needs to be 5 mins in future.
       # if created we don't want to recreate this all the time since we're dynamically setting start_time
-      start_time
+      start_time,
+      timezone # annoyingly this should be changed manually for now. Terraform/azure has confusion with the timezone being 'Etc/UTC' or 'UTC'.
     ]
   }
 }

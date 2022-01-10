@@ -28,12 +28,13 @@ resource "azurerm_automation_schedule" "schedules" {
   frequency               = each.value.frequency
   week_days               = each.value.week_days
   start_time              = "${local.tomorrow}T${each.value.time}Z"
-  timezone                = each.value.timezone
+  timezone                = "UTC"
   lifecycle {
     ignore_changes = [
       # Ignore changes to start_time, because if new needs to be 5 mins in future.
       # if created we don't want to recreate this all the time since we're dynamically setting start_time
-      start_time
+      start_time,
+      timezone # annoyingly this should be changed manually for now. Terraform/azure has confusion with the timezone being 'Etc/UTC' or 'UTC'.
     ]
   }
 }

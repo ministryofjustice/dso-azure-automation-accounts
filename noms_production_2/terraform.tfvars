@@ -11,15 +11,13 @@ automation_accounts = { # each named after resource group
 
 schedules = {
   "saturday 7am" = {
-    week_days = ["Saturday"],
-    time      = "07:00:00",
-    timezone  = "Etc/UTC",
-    frequency = "week"
+    week_days     = ["Saturday"],
+    time          = "07:00:00",
+    frequency     = "week"
   },
   "monday 7am" = {
-    week_days = ["Monday"],
-    time      = "07:00:00",
-    timezone  = "Etc/UTC",
-    frequency = "week"
+    week_days     = ["Monday"],
+    time          = "07:00:00",
+    frequency     = "week"
   }
 }

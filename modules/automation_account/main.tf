@@ -28,7 +28,7 @@ resource "azurerm_automation_schedule" "schedules" {
   frequency               = each.value.frequency
   week_days               = each.value.week_days
   start_time              = "${local.tomorrow}T${each.value.time}Z"
-  timezone                = "UTC"
+  timezone                = var.timezone
   lifecycle {
     ignore_changes = [
       # Ignore changes to start_time, because if new needs to be 5 mins in future.

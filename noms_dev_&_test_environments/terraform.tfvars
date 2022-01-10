@@ -23,3 +23,5 @@ schedules = {
     frequency     = "week"
   }
 }
+
+timezone = "Etc/UTC"

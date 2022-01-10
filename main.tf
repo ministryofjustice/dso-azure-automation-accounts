@@ -14,6 +14,7 @@ module "automation_account" {
     "stop-vms"
   ])
   schedules = lookup(each.value, "schedules", var.schedules)
+  timezone = lookup(each.value, "timezone", var.timezone)
   job_schedules = lookup(each.value, "job_schedules", [
     {
       schedule = "weekdays 6am"

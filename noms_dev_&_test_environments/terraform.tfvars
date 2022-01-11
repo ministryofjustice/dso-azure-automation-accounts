@@ -6,9 +6,10 @@
 # will set up shutdown/startup automation at 7pm, 6am UTC respectively
 
 automation_accounts = { # each named after resource group
-  t1-oasys          = {},
-  t2-oasys          = {},
-  nomis-bip-t1      = {}
+  t1-oasys       = {},
+  t2-oasys       = {},
+  t1-prisonnomis = {},
+  nomis-bip-t1   = {}
 }
 
 schedules = {

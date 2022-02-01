@@ -8,6 +8,10 @@ resource "azurerm_automation_account" "automation_account" {
   location            = "UK West"
   resource_group_name = var.resource_group
   sku_name            = "Basic"
+  tags = {
+    infrastructure_support = "DSO:digital-studio-operations-team@digital.justice.gov.uk"
+    source_code            = "https://github.com/ministryofjustice/dso-azure-automation-accounts"
+  }
 }
 
 # sadly doesn't work

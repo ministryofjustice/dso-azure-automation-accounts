@@ -64,4 +64,5 @@ resource "azurerm_automation_job_schedule" "job_schedules" {
   automation_account_name = azurerm_automation_account.automation_account.name
   schedule_name           = each.value.schedule
   runbook_name            = each.value.script
+  depends_on              = [azurerm_automation_runbook.runbooks]
 }

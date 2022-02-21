@@ -138,7 +138,7 @@ resource "azurerm_monitor_action_group" "email_dso" {
 
   email_receiver {
     name          = "email_dso"
-    email_address = "william.gibbon@digital.justice.gov.uk" # change to digital-studio-operations-team@digital.justice.gov.uk
+    email_address = "digital-studio-operations-team@digital.justice.gov.uk"
     use_common_alert_schema = true
   }
 }

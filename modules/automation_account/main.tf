@@ -144,7 +144,7 @@ resource "azurerm_monitor_action_group" "email_dso" {
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
-  name                = "automation_account_query_rule"
+  name                = "runbook_error"
   location            = azurerm_automation_account.automation_account.location
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
 
@@ -165,8 +165,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
   # 16/02/2022, 16:00:18.453	e03e51a5-69dd-419c-9e9b-d3a44fb01326	start-vms	      /subscriptions/b1f3cebb-4988-4ff9-9259-f02ad7744fcb/resourcegroups/t1-oasys/providers/microsoft.automation/automationaccounts/t1-oasys-automation-account   T1-OASYS-AUTOMATION-ACCOUNT	  Connect-AzureRMAccount : An error occurred while sending the request.At start-vms:9 char:9+ + CategoryInfo : CloseError: (:) [Connect-AzureRmAccount], HttpRequestException + FullyQualifiedErrorId : Microsoft.Azure.Commands.Profile.ConnectAzureRmAccountCommand		
   # 16/02/2022, 16:00:19.369	e03e51a5-69dd-419c-9e9b-d3a44fb01326	start-vms	      /subscriptions/b1f3cebb-4988-4ff9-9259-f02ad7744fcb/resourcegroups/t1-oasys/providers/microsoft.automation/automationaccounts/t1-oasys-automation-account   T1-OASYS-AUTOMATION-ACCOUNT   Get-AzureRmVM : No subscription found in the context. Please ensure that the credentials you provided are authorized to access an Azure subscription, then run Connect-AzureRmAccount to login.At start-vms:12 char:12+ + CategoryInfo : CloseError: (:) [Get-AzureRmVM], ApplicationException + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.GetAzureVMCommand		
   severity    = 0
-  frequency   = 30 # mins
-  time_window = 30 # mins
+  frequency   = 5 # mins
+  time_window = 5 # mins
   trigger {
     operator  = "GreaterThan"
     threshold = 0
@@ -177,4 +177,7 @@ resource "azurerm_log_analytics_linked_service" "link_log_workspace" {
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
   workspace_id        = azurerm_log_analytics_workspace.analytics_workspace.id
   read_access_id      = azurerm_automation_account.automation_account.id
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }

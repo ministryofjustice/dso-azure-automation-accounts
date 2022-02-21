@@ -86,16 +86,46 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
   name                       = azurerm_automation_account.automation_account.name
   target_resource_id         = azurerm_automation_account.automation_account.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.analytics_workspace.id
-
+  log {
+    category = "AuditEvent"
+    enabled  = false
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+  log {
+    category = "DscNodeStatus"
+    enabled  = false
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
   log {
     category = "JobLogs"
     enabled  = true
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
   }
   log {
     category = "JobStreams"
     enabled  = true
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
   }
-}
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
 
 ###
 # Alert when there are runbook errors

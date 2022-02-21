@@ -1,6 +1,10 @@
 locals { # currently working on
   current_time = timestamp()
   tomorrow     = formatdate("YYYY-MM-DD", timeadd(local.current_time, "24h"))
+  tags         = {
+    infrastructure_support = "DSO:digital-studio-operations-team@digital.justice.gov.uk"
+    source_code            = "https://github.com/ministryofjustice/dso-azure-automation-accounts"
+  }
 }
 
 resource "azurerm_automation_account" "automation_account" {
@@ -8,10 +12,7 @@ resource "azurerm_automation_account" "automation_account" {
   location            = "UK West"
   resource_group_name = var.resource_group
   sku_name            = "Basic"
-  tags = {
-    infrastructure_support = "DSO:digital-studio-operations-team@digital.justice.gov.uk"
-    source_code            = "https://github.com/ministryofjustice/dso-azure-automation-accounts"
-  }
+  tags                = local.tags
 }
 
 # sadly doesn't work
@@ -56,6 +57,9 @@ resource "azurerm_automation_runbook" "runbooks" {
     resource_group       = azurerm_automation_account.automation_account.resource_group_name
     delay_between_groups = var.delay_between_groups
   })
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "azurerm_automation_job_schedule" "job_schedules" {

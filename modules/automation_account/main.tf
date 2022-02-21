@@ -1,4 +1,4 @@
-locals { # currently working on
+locals {
   current_time = timestamp()
   tomorrow     = formatdate("YYYY-MM-DD", timeadd(local.current_time, "24h"))
   tags         = {
@@ -79,10 +79,7 @@ resource "azurerm_log_analytics_workspace" "analytics_workspace" {
   location            = azurerm_automation_account.automation_account.location
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
   retention_in_days   = 30
-  tags = {
-    infrastructure_support = "DSO:digital-studio-operations-team@digital.justice.gov.uk"
-    source_code            = "https://github.com/ministryofjustice/dso-azure-automation-accounts"
-  }
+  tags                = local.tags
 }
 
 resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
@@ -132,7 +129,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
   | where StreamType_s == "Error"
   | project TimeGenerated, JobId_g, RunbookName_s, _ResourceId, Resource, ResultDescription
   QUERY
-  # returns
+  # query returns :
   # TimeGenerated [UTC]       JobId_g                               RunbookName_s   _ResourceId                                                                                                                                                 Resource                      ResultDescription
   # 16/02/2022, 16:00:18.453	e03e51a5-69dd-419c-9e9b-d3a44fb01326	start-vms	      /subscriptions/b1f3cebb-4988-4ff9-9259-f02ad7744fcb/resourcegroups/t1-oasys/providers/microsoft.automation/automationaccounts/t1-oasys-automation-account   T1-OASYS-AUTOMATION-ACCOUNT	  Connect-AzureRMAccount : An error occurred while sending the request.At start-vms:9 char:9+ + CategoryInfo : CloseError: (:) [Connect-AzureRmAccount], HttpRequestException + FullyQualifiedErrorId : Microsoft.Azure.Commands.Profile.ConnectAzureRmAccountCommand		
   # 16/02/2022, 16:00:19.369	e03e51a5-69dd-419c-9e9b-d3a44fb01326	start-vms	      /subscriptions/b1f3cebb-4988-4ff9-9259-f02ad7744fcb/resourcegroups/t1-oasys/providers/microsoft.automation/automationaccounts/t1-oasys-automation-account   T1-OASYS-AUTOMATION-ACCOUNT   Get-AzureRmVM : No subscription found in the context. Please ensure that the credentials you provided are authorized to access an Azure subscription, then run Connect-AzureRmAccount to login.At start-vms:12 char:12+ + CategoryInfo : CloseError: (:) [Get-AzureRmVM], ApplicationException + FullyQualifiedErrorId : Microsoft.Azure.Commands.Compute.GetAzureVMCommand		

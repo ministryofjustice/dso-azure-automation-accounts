@@ -141,3 +141,9 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
     threshold = 0
   }
 }
+
+resource "azurerm_log_analytics_linked_service" "link_log_workspace" {
+  resource_group_name = azurerm_automation_account.automation_account.resource_group_name
+  workspace_id        = azurerm_log_analytics_workspace.analytics_workspace.id
+  read_access_id      = azurerm_automation_account.automation_account.id
+}

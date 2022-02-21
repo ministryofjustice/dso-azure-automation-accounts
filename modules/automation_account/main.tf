@@ -126,6 +126,7 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
       enabled = false
     }
   }
+}
 
 ###
 # Alert when there are runbook errors

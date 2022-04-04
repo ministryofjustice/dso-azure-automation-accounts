@@ -5,6 +5,11 @@
 #   some-resourcegroup {}
 # will set up shutdown/startup automation at 7pm, 6am UTC respectively
 
+tenant_id            = "747381f4-e81f-4a43-bf68-ced6a1e14edf"
+subscription_id      = "1d95dcda-65b2-4273-81df-eb979c6b547b"
+la_workspace_name    = "noms-prod1"
+la_workspace_rg_name = "noms-prod-loganalytics"
+
 automation_accounts = { # each named after resource group
   nomis-bip-lsast = {},
   nomis-bip-preprod = {

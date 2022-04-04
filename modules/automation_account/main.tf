@@ -1,7 +1,7 @@
 locals {
   current_time = timestamp()
   tomorrow     = formatdate("YYYY-MM-DD", timeadd(local.current_time, "24h"))
-  tags         = {
+  tags = {
     infrastructure_support = "DSO:digital-studio-operations-team@digital.justice.gov.uk"
     source_code            = "https://github.com/ministryofjustice/dso-azure-automation-accounts"
   }
@@ -74,18 +74,16 @@ resource "azurerm_automation_job_schedule" "job_schedules" {
 ##
 # store the logs from the runbook runs
 
-resource "azurerm_log_analytics_workspace" "analytics_workspace" {
-  name                = azurerm_automation_account.automation_account.name
-  location            = azurerm_automation_account.automation_account.location
-  resource_group_name = azurerm_automation_account.automation_account.resource_group_name
-  retention_in_days   = 30
-  tags                = local.tags
+
+data "azurerm_log_analytics_workspace" "analytics_workspace" {
+  name                = var.la_workspace_name
+  resource_group_name = var.la_workspace_rg_name
 }
 
 resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
   name                       = azurerm_automation_account.automation_account.name
   target_resource_id         = azurerm_automation_account.automation_account.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.analytics_workspace.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.analytics_workspace.id
   log {
     category = "AuditEvent"
     enabled  = false
@@ -137,8 +135,8 @@ resource "azurerm_monitor_action_group" "email_dso" {
   short_name          = "email_dso"
 
   email_receiver {
-    name          = "email_dso"
-    email_address = "digital-studio-operations-team@digital.justice.gov.uk"
+    name                    = "email_dso"
+    email_address           = "digital-studio-operations-team@digital.justice.gov.uk"
     use_common_alert_schema = true
   }
 }
@@ -149,12 +147,12 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
 
   action {
-    action_group           = [azurerm_monitor_action_group.email_dso.id]
-    email_subject          = "${var.resource_group}-automation-account job errors"
+    action_group  = [azurerm_monitor_action_group.email_dso.id]
+    email_subject = "${var.resource_group}-automation-account job errors"
   }
-  data_source_id = azurerm_log_analytics_workspace.analytics_workspace.id
+  data_source_id = data.azurerm_log_analytics_workspace.analytics_workspace.id
   description    = "Alert when errors exist in automation account job"
-  query       = <<-QUERY
+  query          = <<-QUERY
   AzureDiagnostics 
   | where ResourceProvider == "MICROSOFT.AUTOMATION"
   | where StreamType_s == "Error"
@@ -175,7 +173,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
 
 resource "azurerm_log_analytics_linked_service" "link_log_workspace" {
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
-  workspace_id        = azurerm_log_analytics_workspace.analytics_workspace.id
+  workspace_id        = data.azurerm_log_analytics_workspace.analytics_workspace.id
   read_access_id      = azurerm_automation_account.automation_account.id
   lifecycle {
     ignore_changes = [tags]

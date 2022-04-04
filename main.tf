@@ -13,6 +13,7 @@ module "automation_account" {
   resource_group       = each.key
   la_workspace_name    = var.la_workspace_name
   la_workspace_rg_name = var.la_workspace_rg_name
+  tags                 = lookup(each.value, "tags", {})
   script_templates = lookup(each.value, "script_templates", [
     "start-vms",
     "stop-vms"

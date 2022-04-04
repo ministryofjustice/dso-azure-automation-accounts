@@ -11,9 +11,12 @@ la_workspace_name    = "noms-prod1"
 la_workspace_rg_name = "noms-prod-loganalytics"
 
 automation_accounts = { # each named after resource group
-  nomis-bip-lsast = {},
+  nomis-bip-lsast = {
+    tags = { service = "NOMIS", application = "BI", environment_name = "lsast" }
+  },
   nomis-bip-preprod = {
     "delay_between_groups" = 600
+    tags = { service = "NOMIS", application = "BI", environment_name = "preprod" }
   }
 }
 

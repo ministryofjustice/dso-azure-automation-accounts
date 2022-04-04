@@ -12,10 +12,18 @@ la_workspace_rg_name = "noms-test-loganalytics"
 
 
 automation_accounts = { # each named after resource group
-  t1-oasys       = {},
-  t2-oasys       = {},
-  t1-prisonnomis = {},
-  nomis-bip-t1   = {}
+  t1-oasys = {
+    tags = { service = "OASys", application = "OASys", environment_name = "T1" }
+  },
+  t2-oasys = {
+    tags = { service = "OASys", application = "OASys", environment_name = "T2" }
+  },
+  t1-prisonnomis = {
+    tags = { service = "NOMIS", application = "NOMIS", environment_name = "T1" }
+  },
+  nomis-bip-t1 = {
+    tags = { service = "NOMIS", application = "BI", environment_name = "T1" }
+  }
 }
 
 schedules = {

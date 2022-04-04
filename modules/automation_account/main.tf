@@ -1,10 +1,11 @@
 locals {
   current_time = timestamp()
   tomorrow     = formatdate("YYYY-MM-DD", timeadd(local.current_time, "24h"))
-  tags = {
+  common_tags = {
     infrastructure_support = "DSO:digital-studio-operations-team@digital.justice.gov.uk"
     source_code            = "https://github.com/ministryofjustice/dso-azure-automation-accounts"
   }
+  tags = merge(var.tags, local.common_tags)
 }
 
 resource "azurerm_automation_account" "automation_account" {
@@ -50,6 +51,7 @@ resource "azurerm_automation_runbook" "runbooks" {
   location                = azurerm_automation_account.automation_account.location
   resource_group_name     = azurerm_automation_account.automation_account.resource_group_name
   automation_account_name = azurerm_automation_account.automation_account.name
+  tags                    = local.tags
   log_verbose             = "false"
   log_progress            = "true"
   runbook_type            = "PowerShellWorkflow"
@@ -57,9 +59,6 @@ resource "azurerm_automation_runbook" "runbooks" {
     resource_group       = azurerm_automation_account.automation_account.resource_group_name
     delay_between_groups = var.delay_between_groups
   })
-  lifecycle {
-    ignore_changes = [tags]
-  }
 }
 
 resource "azurerm_automation_job_schedule" "job_schedules" {
@@ -133,6 +132,7 @@ resource "azurerm_monitor_action_group" "email_dso" {
   name                = "email_dso"
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
   short_name          = "email_dso"
+  tags                = local.tags
 
   email_receiver {
     name                    = "email_dso"
@@ -145,6 +145,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
   name                = "runbook_error"
   location            = azurerm_automation_account.automation_account.location
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
+  tags                = local.tags
 
   action {
     action_group  = [azurerm_monitor_action_group.email_dso.id]
@@ -175,7 +176,5 @@ resource "azurerm_log_analytics_linked_service" "link_log_workspace" {
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
   workspace_id        = data.azurerm_log_analytics_workspace.analytics_workspace.id
   read_access_id      = azurerm_automation_account.automation_account.id
-  lifecycle {
-    ignore_changes = [tags]
-  }
+  tags                = local.tags
 }

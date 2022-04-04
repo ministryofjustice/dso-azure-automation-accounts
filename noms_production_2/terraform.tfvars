@@ -6,18 +6,18 @@
 # will set up shutdown/startup automation at 7pm, 6am UTC respectively
 
 automation_accounts = { # each named after resource group
-  pp-oasys   = {}
+  pp-oasys = {}
 }
 
 schedules = {
   "saturday 7am" = {
-    week_days     = ["Saturday"],
-    time          = "07:00:00",
-    frequency     = "week"
+    week_days = ["Saturday"],
+    time      = "07:00:00",
+    frequency = "week"
   },
   "monday 7am" = {
-    week_days     = ["Monday"],
-    time          = "07:00:00",
-    frequency     = "week"
+    week_days = ["Monday"],
+    time      = "07:00:00",
+    frequency = "week"
   }
 }

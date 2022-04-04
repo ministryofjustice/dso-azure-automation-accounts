@@ -156,6 +156,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
   query          = <<-QUERY
   AzureDiagnostics 
   | where ResourceProvider == "MICROSOFT.AUTOMATION"
+  | where Resource =~ "${azurerm_automation_account.automation_account.name}"
   | where StreamType_s == "Error"
   | project TimeGenerated, JobId_g, RunbookName_s, _ResourceId, Resource, ResultDescription
   QUERY

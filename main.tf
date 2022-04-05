@@ -1,4 +1,6 @@
 provider "azurerm" {
+  tenant_id       = var.tenant_id
+  subscription_id = var.subscription_id
   features {}
 }
 
@@ -6,9 +8,12 @@ provider "azurerm" {
 # automation
 
 module "automation_account" {
-  source         = "../modules/automation_account"
-  for_each       = var.automation_accounts
-  resource_group = each.key
+  source               = "../modules/automation_account"
+  for_each             = var.automation_accounts
+  resource_group       = each.key
+  la_workspace_name    = var.la_workspace_name
+  la_workspace_rg_name = var.la_workspace_rg_name
+  tags                 = lookup(each.value, "tags", {})
   script_templates = lookup(each.value, "script_templates", [
     "start-vms",
     "stop-vms"

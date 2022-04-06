@@ -73,16 +73,19 @@ resource "azurerm_automation_job_schedule" "job_schedules" {
 ##
 # store the logs from the runbook runs
 
-
-data "azurerm_log_analytics_workspace" "analytics_workspace" {
-  name                = var.la_workspace_name
-  resource_group_name = var.la_workspace_rg_name
+# Note you can only link 1 automation account with a workspace
+resource "azurerm_log_analytics_workspace" "analytics_workspace" {
+  name                = azurerm_automation_account.automation_account.name
+  location            = azurerm_automation_account.automation_account.location
+  resource_group_name = azurerm_automation_account.automation_account.resource_group_name
+  retention_in_days   = 30
+  tags                = local.tags
 }
 
 resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
   name                       = azurerm_automation_account.automation_account.name
   target_resource_id         = azurerm_automation_account.automation_account.id
-  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.analytics_workspace.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.analytics_workspace.id
   log {
     category = "AuditEvent"
     enabled  = false
@@ -151,7 +154,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
     action_group  = [azurerm_monitor_action_group.email_dso.id]
     email_subject = "${var.resource_group}-automation-account job errors"
   }
-  data_source_id = data.azurerm_log_analytics_workspace.analytics_workspace.id
+  data_source_id = azurerm_log_analytics_workspace.analytics_workspace.id
   description    = "Alert when errors exist in automation account job"
   query          = <<-QUERY
   AzureDiagnostics 
@@ -175,7 +178,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "alert" {
 
 resource "azurerm_log_analytics_linked_service" "link_log_workspace" {
   resource_group_name = azurerm_automation_account.automation_account.resource_group_name
-  workspace_id        = data.azurerm_log_analytics_workspace.analytics_workspace.id
+  workspace_id        = azurerm_log_analytics_workspace.analytics_workspace.id
   read_access_id      = azurerm_automation_account.automation_account.id
   tags                = local.tags
 }

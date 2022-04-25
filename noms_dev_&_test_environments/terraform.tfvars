@@ -12,9 +12,6 @@ la_workspace_rg_name = "noms-test-loganalytics"
 
 
 automation_accounts = { # each named after resource group
-  t1-oasys = {
-    tags = { service = "OASys", application = "OASys", environment_name = "T1" }
-  },
   t2-oasys = {
     tags = { service = "OASys", application = "OASys", environment_name = "T2" }
   },

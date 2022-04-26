@@ -12,7 +12,6 @@ la_workspace_rg_name = "noms-test-loganalytics"
 
 
 automation_accounts = { # each named after resource group
-  }
 }
 
 schedules = {

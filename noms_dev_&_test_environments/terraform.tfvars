@@ -12,26 +12,7 @@ la_workspace_rg_name = "noms-test-loganalytics"
 
 
 automation_accounts = { # each named after resource group
-  t2-oasys = {
-    tags = { service = "OASys", application = "OASys", environment_name = "T2" }
-  },
-  t1-prisonnomis = {
-    tags = { service = "NOMIS", application = "NOMIS", environment_name = "T1" }
-  },
-  nomis-bip-t1 = {
-    tags = { service = "NOMIS", application = "BI", environment_name = "T1" }
-  }
 }
 
 schedules = {
-  "weekdays 6am" = {
-    week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    time      = "06:00:00",
-    frequency = "week"
-  },
-  "weekdays 7pm" = {
-    week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    time      = "19:00:00",
-    frequency = "week"
-  }
 }

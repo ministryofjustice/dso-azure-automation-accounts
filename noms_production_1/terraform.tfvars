@@ -11,24 +11,7 @@ la_workspace_name    = "noms-prod1"
 la_workspace_rg_name = "noms-prod-loganalytics"
 
 automation_accounts = { # each named after resource group
-  nomis-bip-lsast = {
-    tags = { service = "NOMIS", application = "BI", environment_name = "lsast" }
-  },
-  nomis-bip-preprod = {
-    "delay_between_groups" = 600
-    tags = { service = "NOMIS", application = "BI", environment_name = "preprod" }
-  }
 }
 
 schedules = {
-  "weekdays 6am" = {
-    week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    time      = "06:00:00",
-    frequency = "week"
-  },
-  "weekdays 7pm" = {
-    week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    time      = "19:00:00",
-    frequency = "week"
-  }
 }
